@@ -115,8 +115,8 @@ class MazeGame():
 
     def initalizemap(self, number_of_rooms = 10):
         map_width = number_of_rooms // 2
-        if number_of_rooms > 10:
-            for m in range(number_of_rooms - 10):
+        if number_of_rooms > len(descriptions.list):
+            for m in range(number_of_rooms - len(descriptions.list)):
                 descriptions.list.append(["You enter a large empty room with smooth stone walls", ["nothing"]])
 
         # https://codereview.stackexchange.com/questions/134647/creating-a-grid-to-the-specified-size-using-lists
