@@ -1,10 +1,17 @@
 import random
 import descriptions
 
-class MazeGame():
+
+class MazeGame:
     def __init__(self, name = 'Chris "topher" Waldon', description = "Im a Rock!"):
-        self.__name = name
-        self.__description = description
+        if name == "":
+            self.__name = 'Chris "topher" Waldon'
+        else:
+            self.__name = name
+        if description == "":
+            self.__description = "Im a Rock!"
+        else:
+            self.__description = description
         self.__inventory = {"items": [], "weapons": []}
         self.__player_location = None
         self.__start = None
@@ -39,7 +46,9 @@ class MazeGame():
                 print(x, end=" ")
             print()
             if not cheat:
-                action: str = input("what do you want to do?")
+                print()
+                action: str = input("what do you want to do?: ")
+
             else:
                 print("You go: " + action)
 
@@ -93,6 +102,18 @@ class MazeGame():
                 else:
                     print("you walk into a wall, it hurts")
 
+            elif action.lower() == "whoami":
+                print("Your name is {}, you look like {}".format(self.__name, self.__description))
+
+            elif "drop " in action.lower():
+                if action.lower().split()[1] in self.__inventory["items"]:
+                    self.__inventory["items"].remove(action.lower().split()[1])
+                elif action.lower().split()[1] in self.__inventory["weapons"]:
+                    self.__inventory["weapons"].remove(action.lower().split()[1])
+                else:
+                    print("You can't drop what you don't have!")
+
+
             elif action.lower() == "restart":
                 print("Hope you have better luck this time!")
                 number_of_rooms *= 2
@@ -103,14 +124,14 @@ class MazeGame():
 
             else:
                 print("while trying to figure out what to do, you keel over and die.")
-                #exit(0)
+                exit(0)
 
 
         print(
             "You squint at the bright light as you enter the next room," +
             " then suddenly you realise your outdoors," +
             "you turn around only to see that your standing on a flat open plain next to a small town.")
-        print("You are carying: " + str(self.__inventory["items"]) + " " + str(self.__inventory["weapons"]))
+        print("You are carrying: " + str(self.__inventory["items"]) + " " + str(self.__inventory["weapons"]))
         exit(0)
 
     def initalizemap(self, number_of_rooms = 10):
@@ -118,7 +139,7 @@ class MazeGame():
         if number_of_rooms > len(descriptions.list):
             for m in range(number_of_rooms - len(descriptions.list)):
                 descriptions.list.append(["You enter a large empty room with smooth stone walls", ["nothing"]])
-
+        # LOOK ITS A WILD LIST COMPREHENSION!
         # https://codereview.stackexchange.com/questions/134647/creating-a-grid-to-the-specified-size-using-lists
         map_grid = [[0 for x in range(map_width)] for y in range(map_width)]
         location = [map_width - 1, map_width // 2]
@@ -144,7 +165,8 @@ class MazeGame():
             else:
                 map_grid[location[0] % map_width][location[1] % map_width].description, map_grid[location[0] % map_width][location[1] % map_width].attributes = descriptions.list.pop(random.randrange(len(descriptions.list)))
 
-        map_grid[map_width - 1][map_width // 2].description = "You wake up with a headache in a large room with stone walls, there is no apparent source of light"
+        map_grid[map_width - 1][map_width // 2].description = ("You wake up with a headache in a large room with stone walls, there is no apparent source of light"
+        + " the last thing you remember was arguing with your friend that DND sucks, putting that to the side you decide it would probably be a good idea to find out where you are and get out.")
         map_grid[map_width - 1][map_width // 2].attributes = ["action", "search", "item", ["Pen"]]
         # x = 0
         # y = 0
@@ -200,29 +222,6 @@ class Room():
         self.attributes = []
         self.exit = False
 
-    def set_north(self, connected_room):
-        if self.north != connected_room:
-            self.north = connected_room
-            connected_room.set_south(self)
-
-    def set_south(self, connected_room):
-        if self.south != connected_room:
-            self.south = connected_room
-            connected_room.set_north(self)
-
-    def set_east(self, connected_room):
-        if self.east != connected_room:
-            self.east = connected_room
-            connected_room.set_west(self)
-
-    def set_west(self, connected_room):
-        if self.west != connected_room:
-            self.west = connected_room
-            connected_room.set_east(self)
-
-    def set_random(self):
-        direction = random.randrange(4)
-
     def get_directions(self):
         valid_directions = []
         if self.north is not None:
@@ -238,5 +237,5 @@ class Room():
 
 name = input("Enter your name: ")
 description = input("describe yourself: ")
-x = MazeGame()
+x = MazeGame(name, description)
 x.game()
